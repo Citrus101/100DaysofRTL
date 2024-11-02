@@ -1,14 +1,15 @@
 module CLA
-    #(WIDTH = 3)(
-    input wire a[WIDTH - 1 : 0],b[WIDTH - 1 : 0],
+    #(parameter WIDTH = 3)(
+    input wire [WIDTH - 1 : 0] a,
+    input wire [WIDTH - 1 : 0] b,
     input wire Cin,
-    output reg sum[WIDTH - 1 : 0],
-    output reg Cout 
+    output wire [WIDTH - 1 : 0] sum,
+    output wire Cout 
 );
 
-    wire g[WIDTH - 1 : 0];
-    wire p[WIDTH - 1 : 0];
-    wire c[WIDTH : 0];
+    wire [WIDTH - 1 : 0] g;
+    wire [WIDTH - 1 : 0] p;
+    wire [WIDTH : 0] c;
     assign c[0] = Cin;
 
     assign g = a & b;
@@ -16,10 +17,13 @@ module CLA
 
     genvar i;
     generate
-        for(i = 0; i <= WIDTH; i = i + 1) c[i + 1] = g[i] + (p[i] & c[i - 1]);
+        for(i = 0; i < WIDTH; i = i + 1) begin : carry_calc
+            assign c[i + 1] = g[i] | (p[i] & c[i]);
+        end
     endgenerate
-
+    
+  
     assign sum = g ^ c[4 : 1];
-    assign Cout = c[WIDTH;
+    assign Cout = c[WIDTH];
     
 endmodule
